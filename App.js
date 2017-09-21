@@ -21,7 +21,7 @@ export default class App extends React.Component {
 
   _onGLContextCreate = async gl => {
     // Start AR session
-    const arSession = await NativeModules.ExponentGLViewManager.startARSession(
+    const arSession = await NativeModules.ExponentGLViewManager.startARSessionAsync(
       findNodeHandle(this._nativeGLView)
     );
 
