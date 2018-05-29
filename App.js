@@ -1,69 +1,58 @@
+import { AR, Permissions, ScreenOrientation } from 'expo';
+import { THREE } from 'expo-three';
 import React from 'react';
-import { findNodeHandle, NativeModules } from 'react-native';
+import { Text, View } from 'react-native';
+import { createStackNavigator } from 'react-navigation';
 
-import * as THREE from 'three';
-import ExpoTHREE from 'expo-three';
+import Page from './components/Page';
+import * as ThreeAR from './ThreeAR';
+
+const Navigator = createStackNavigator({
+  Page: {
+    screen: Page,
+  },
+});
 
 export default class App extends React.Component {
-  render() {
-    return (
-      <Expo.GLView
-        nativeRef_EXPERIMENTAL={this._setNativeGLView}
-        style={{ flex: 1 }}
-        onContextCreate={this._onGLContextCreate}
-      />
-    );
+  state = {
+    hasCameraPermission: null,
+  };
+
+  async componentWillMount() {
+    ThreeAR.suppressWarnings(true);
+    THREE.suppressExpoWarnings(true);
+    ScreenOrientation.allow(ScreenOrientation.Orientation.ALL);
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    this.setState({ hasCameraPermission: status === 'granted' });
+  }
+  componentWillUnmount() {
+    ThreeAR.suppressWarnings(false);
+    THREE.suppressExpoWarnings(false);
+    AR.stopAsync();
   }
 
-  _setNativeGLView = ref => {
-    this._nativeGLView = ref;
-  };
-
-  _onGLContextCreate = async gl => {
-    // Start AR session
-    const arSession = await NativeModules.ExponentGLViewManager.startARSessionAsync(
-      findNodeHandle(this._nativeGLView)
-    );
-
-    // Initialize renderer, scene, camera
-    const renderer = ExpoTHREE.createRenderer({ gl });
-    renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-    renderer.setClearColor(0x000000, 1);
-    const scene = new THREE.Scene();
-    scene.background = ExpoTHREE.createARBackgroundTexture(arSession, renderer);
-    const camera = ExpoTHREE.createARCamera(
-      arSession,
-      gl.drawingBufferWidth,
-      gl.drawingBufferHeight,
-      0.01,
-      1000
-    );
-
-    // Rotating cube
-    const cube = new THREE.Mesh(
-      new THREE.BoxGeometry(0.07, 0.07, 0.07),
-      new THREE.MeshBasicMaterial({
-        map: await ExpoTHREE.createTextureAsync({
-          asset: Expo.Asset.fromModule(require('./assets/icons/app-icon.png')),
-        }),
-      })
-    );
-    cube.position.z = -0.4;
-    scene.add(cube);
-
-    // Main loop
-    const render = () => {
-      // Rotate cube
-      cube.rotation.x += 0.07;
-      cube.rotation.y += 0.04;
-
-      // Render scene!
-      renderer.render(scene, camera);
-
-      // End and schedule another frame
-      gl.endFrameEXP();
-      requestAnimationFrame(render);
-    };
-    render();
-  };
+  render() {
+    const { hasCameraPermission } = this.state;
+    if (hasCameraPermission === null) {
+      return <View style={{ flex: 1, backgroundColor: 'white' }} />;
+    } else if (hasCameraPermission === false) {
+      return <ErrorView>No access to camera</ErrorView>;
+    } else if (!AR.isAvailable()) {
+      return <ErrorView>ARKit isn't available!</ErrorView>;
+    } else {
+      return <Navigator />;
+    }
+  }
 }
+
+const ErrorView = ({ children }) => (
+  <View
+    style={{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'red',
+    }}>
+    <Text style={{ fontSize: 24, color: 'white' }}>{children}</Text>
+  </View>
+);

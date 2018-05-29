@@ -4,9 +4,8 @@
     "description": "An empty new project",
     "slug": "three-ar-test",
     "privacy": "public",
-    "sdkVersion": "21.0.0",
+    "sdkVersion": "UNVERSIONED",
     "version": "1.0.0",
-    "orientation": "portrait",
     "primaryColor": "#cccccc",
     "icon": "./assets/icons/app-icon.png",
     "loading": {
@@ -14,7 +13,7 @@
       "hideExponentText": false
     },
     "packagerOpts": {
-      "assetExts": ["ttf", "mp4"]
+      "assetExts": ["ttf", "mp4", "dae", "tga", "obj", "mtl", "bmp"]
     },
     "ios": {
       "supportsTablet": true
