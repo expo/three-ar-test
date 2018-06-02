@@ -22,6 +22,9 @@ export default class App extends React.Component {
     ThreeAR.suppressWarnings(true);
     THREE.suppressExpoWarnings(true);
     ScreenOrientation.allow(ScreenOrientation.Orientation.ALL);
+    
+  }
+  async componentDidMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
   }
@@ -33,12 +36,12 @@ export default class App extends React.Component {
 
   render() {
     const { hasCameraPermission } = this.state;
-    if (hasCameraPermission === null) {
-      return <View style={{ flex: 1, backgroundColor: 'white' }} />;
+    if (!AR.isAvailable()) {
+      return <ErrorView>{AR.getUnavailabilityReason()}</ErrorView>;
+    } else if (hasCameraPermission === null) {
+      return (<View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}><Text>Waiting for camera permission</Text></View>);
     } else if (hasCameraPermission === false) {
       return <ErrorView>No access to camera</ErrorView>;
-    } else if (!AR.isAvailable()) {
-      return <ErrorView>ARKit isn't available!</ErrorView>;
     } else {
       return <Navigator />;
     }
@@ -52,6 +55,7 @@ const ErrorView = ({ children }) => (
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: 'red',
+      paddingHorizontal: 24,
     }}>
     <Text style={{ fontSize: 24, color: 'white' }}>{children}</Text>
   </View>
