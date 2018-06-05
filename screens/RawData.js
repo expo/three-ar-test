@@ -58,10 +58,10 @@ class RawData extends React.Component {
       if (!this.arSession) {
         return;
       }
-      const { lightEstimation, rawFeaturePoints, capturedDepthData, anchors } = AR.getCurrentFrame({
+      const { lightEstimation, rawFeaturePoints, anchors } = AR.getCurrentFrame({
         lightEstimation: true,
         rawFeaturePoints: true,
-        capturedDepthData: true,
+        // capturedDepthData: true,
         anchors: {},
       });
 
@@ -77,24 +77,24 @@ class RawData extends React.Component {
         this.light.data = lightEstimation;
       }
       // This is the depth info from the iPhoneX front camera
-      if (capturedDepthData) {
-        const {
-          depthDataQuality,
-          depthDataAccuracy,
-          depthDataFiltered,
-          cameraCalibrationData,
-        } = capturedDepthData;
+      // if (capturedDepthData) {
+      //   const {
+      //     depthDataQuality,
+      //     depthDataAccuracy,
+      //     depthDataFiltered,
+      //     cameraCalibrationData,
+      //   } = capturedDepthData;
 
-        const {
-          intrinsicMatrix,
-          intrinsicMatrixReferenceDimensions, // {width, height}
-          extrinsicMatrix,
-          pixelSize,
-          lensDistortionLookupTable,
-          inverseLensDistortionLookupTable,
-          lensDistortionCenter, // {x, y}
-        } = cameraCalibrationData;
-      }
+      //   const {
+      //     intrinsicMatrix,
+      //     intrinsicMatrixReferenceDimensions, // {width, height}
+      //     extrinsicMatrix,
+      //     pixelSize,
+      //     lensDistortionLookupTable,
+      //     inverseLensDistortionLookupTable,
+      //     lensDistortionCenter, // {x, y}
+      //   } = cameraCalibrationData;
+      // }
 
       if (Array.isArray(anchors) && this.planes) {
         const planes = anchors.filter(({ type }) => type === 'ARPlaneAnchor');
