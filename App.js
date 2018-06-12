@@ -22,12 +22,17 @@ export default class App extends React.Component {
     ThreeAR.suppressWarnings(true);
     THREE.suppressExpoWarnings(true);
     ScreenOrientation.allow(ScreenOrientation.Orientation.ALL);
-    
   }
-  async componentDidMount() {
+
+  componentDidMount() {
+    this._setupAsync();
+  }
+
+  _setupAsync = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
-  }
+  };
+
   componentWillUnmount() {
     ThreeAR.suppressWarnings(false);
     THREE.suppressExpoWarnings(false);
@@ -39,7 +44,17 @@ export default class App extends React.Component {
     if (!AR.isAvailable()) {
       return <ErrorView>{AR.getUnavailabilityReason()}</ErrorView>;
     } else if (hasCameraPermission === null) {
-      return (<View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}><Text>Waiting for camera permission</Text></View>);
+      return (
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'white',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text>Waiting for camera permission</Text>
+        </View>
+      );
     } else if (hasCameraPermission === false) {
       return <ErrorView>No access to camera</ErrorView>;
     } else {

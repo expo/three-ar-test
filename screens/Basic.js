@@ -1,10 +1,11 @@
 import { AR } from 'expo';
 import ExpoTHREE, { THREE } from 'expo-three';
 import React from 'react';
+import { View, Text } from 'react-native';
 
 import GraphicsView from '../components/GraphicsView';
 import * as ThreeAR from '../ThreeAR';
-import { View, Text } from 'react-native';
+
 export default class App extends React.Component {
   render() {
     const config = AR.TrackingConfigurations.World;
@@ -19,7 +20,7 @@ export default class App extends React.Component {
           arEnabled
         />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>😮 Works with any size viewport</Text>
+          <Text>😮 Works with any size viewport, try rotating your phone.</Text>
         </View>
       </View>
     );
